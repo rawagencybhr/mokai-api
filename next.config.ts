@@ -1,14 +1,17 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // إيقاف Turbopack وإجبار Next.js على استخدام Webpack
-  turbopack: false,
+  // تعطيل أي إعدادات Webpack غير متوافقة
+  webpack: () => ({
+    resolve: {
+      alias: {
+        "firebase-admin": require.resolve("firebase-admin"),
+      },
+    },
+  }),
 
-  webpack: (config) => {
-    // إصلاح firebase-admin في Vercel
-    config.resolve.alias["firebase-admin"] = require.resolve("firebase-admin");
-    return config;
-  },
+  // لإلغاء تحذيرات Turbopack
+  turbopack: {},
 };
 
 export default nextConfig;
