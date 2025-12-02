@@ -1,15 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    turbo: {
-      resolveAlias: {
-        // إصلاح firebase-admin داخل Vercel
-        "firebase-admin": require.resolve("firebase-admin"),
-      },
-    },
+  webpack: (config) => {
+    config.resolve.alias["firebase-admin"] = require.resolve("firebase-admin");
+    return config;
   },
 };
 
 export default nextConfig;
-// https://github.com/firebase/firebase-admin-node/issues/897#issuecomment-898879744
