@@ -1,9 +1,8 @@
-export const dynamic = "force-dynamic"; 
+export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
-// @ts-ignore
-import admin from "@/lib/firebase";
+import app, { admin } from "@/lib/firebase"; // ← الاستيراد الصحيح
 
 export async function GET(req: Request) {
   try {
@@ -13,7 +12,10 @@ export async function GET(req: Request) {
     const botId = searchParams.get("state");
 
     if (!code || !botId) {
-      return NextResponse.json({ error: "Missing code or state" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing code or state" },
+        { status: 400 }
+      );
     }
 
     const client_id = process.env.FB_APP_ID;
@@ -21,10 +23,13 @@ export async function GET(req: Request) {
     const redirect_uri = `${process.env.NEXT_PUBLIC_API_URL}/api/instagram/oauth/callback`;
 
     if (!client_id || !client_secret) {
-      return NextResponse.json({ error: "Missing FB APP env vars" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Missing FB APP env vars" },
+        { status: 500 }
+      );
     }
 
-    // ---- Exchange Code for Token ----
+    // 1) Exchange code for access token
     const tokenRes = await fetch(
       `https://graph.facebook.com/v21.0/oauth/access_token?` +
         new URLSearchParams({
@@ -41,17 +46,18 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: tokenData.error }, { status: 500 });
     }
 
-    // ---- Save Token to Firestore ----
-    await admin.firestore().collection("bots").doc(botId).set(
+    // 2) Save Token into Firestore
+    const db = admin.firestore();
+    await db.collection("bots").doc(botId).set(
       {
         instagramAccessToken: tokenData.access_token,
-        connectedAt: new Date(),
+        connectedAt: admin.firestore.FieldValue.serverTimestamp(),
       },
       { merge: true }
     );
 
+    // 3) Redirect back to dashboard
     const redirectURL = `${process.env.NEXT_PUBLIC_DASHBOARD_URL}/bot/${botId}?connected=1`;
-
     return NextResponse.redirect(redirectURL);
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
