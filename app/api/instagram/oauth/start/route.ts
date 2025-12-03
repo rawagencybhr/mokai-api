@@ -7,7 +7,8 @@ export async function GET(req: NextRequest) {
     return new Response("Missing botId", { status: 400 });
   }
 
-  const redirectUri = `${process.env.NEXT_PUBLIC_API_URL}/api/instagram/oauth/callback`;
+  // 👇 أهم إصلاح: استخدام دومين mokai-api تلقائياً
+  const redirectUri = `${req.nextUrl.origin}/api/instagram/oauth/callback`;
 
   const authUrl =
     "https://www.facebook.com/v21.0/dialog/oauth?" +
