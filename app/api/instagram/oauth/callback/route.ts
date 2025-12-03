@@ -1,3 +1,6 @@
+export const dynamic = "force-dynamic"; 
+export const runtime = "nodejs";
+
 import { NextResponse } from "next/server";
 import admin from "@/lib/firebase";
 
@@ -46,7 +49,6 @@ export async function GET(req: Request) {
       { merge: true }
     );
 
-    // ---- Redirect Back to Dashboard ----
     const redirectURL = `${process.env.NEXT_PUBLIC_DASHBOARD_URL}/bot/${botId}?connected=1`;
 
     return NextResponse.redirect(redirectURL);
