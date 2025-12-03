@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
+// @ts-ignore
 import admin from "@/lib/firebase";
 
 export async function GET(req: Request) {
