@@ -12,9 +12,10 @@ export async function GET(req: NextRequest) {
   const authUrl =
     "https://www.facebook.com/v21.0/dialog/oauth?" +
     new URLSearchParams({
-      client_id: process.env.FACEBOOK_APP_ID!,
+      client_id: process.env.FB_APP_ID!,
       redirect_uri: redirectUri,
-      scope: "instagram_basic,pages_show_list,instagram_manage_messages,pages_manage_metadata",
+      scope:
+        "instagram_basic,pages_show_list,instagram_manage_messages,pages_manage_metadata",
       response_type: "code",
       state: botId,
     }).toString();
